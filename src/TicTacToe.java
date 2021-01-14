@@ -1,5 +1,4 @@
 
-
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
@@ -182,8 +181,6 @@ public class TicTacToe {
     public static int computerTurnHuman()
     {
 
-
-      //  System.out.println("HELLO ARE U ENTERING THIS FUNCTION");
         boolean winPossibleComputer = false;
 
         // checks for possible win for x if x is temporarily put in all empty spots
@@ -196,7 +193,6 @@ public class TicTacToe {
                 updateBoard(i);
                 if(checkBoard().equals("X"))
                 {
-                   // System.out.println("ENTERED POSSIBLE WIN FOR COMPUTER");
                     winPossibleComputer = true;
                 }
                 gameBoard[i].setState(' ');
@@ -418,13 +414,11 @@ public class TicTacToe {
 
 
 
-
-
-
         if(gameBoard[move].getState() == ' ')
         {
             return true;
         }
+
         else
         {
             System.out.println("\n\t\t\t\t\t\t\tInvalid move! Please try another move.");
@@ -459,7 +453,6 @@ public class TicTacToe {
 
         do {
             int move = -1;
-         //   System.out.println("\n\t\t\t\t\t\t\tSTART GAME");
 
             if(firstPlayer.equals("COMPUTER"))
             {

@@ -1,13 +1,11 @@
 public class Tile {
 
     // x or o
-    // - if blank
     private char state;
 
     public Tile( )
     {
         state = ' ';
-
     }
 
 
