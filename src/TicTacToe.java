@@ -1,5 +1,4 @@
 
-import org.w3c.dom.ls.LSOutput;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -13,8 +12,6 @@ public class TicTacToe {
     private static Random random = new Random();
 
     static HashMap<String, Integer> scores = new HashMap<>();
-
-
 
 
 
@@ -178,47 +175,106 @@ public class TicTacToe {
         return num;
     }
 
+
+
     // returns a hard coded move
-    /*
+
     public static int computerTurnHuman()
     {
 
 
-        // look for the O's
+      //  System.out.println("HELLO ARE U ENTERING THIS FUNCTION");
+        boolean winPossibleComputer = false;
 
-        // check first the position of o where theres many potential
-
+        // checks for possible win for x if x is temporarily put in all empty spots
         for(int i = 0; i < gameBoard.length; i++)
         {
 
-            // if spot is available
+
             if(gameBoard[i].getState() == ' ')
             {
+                updateBoard(i);
+                if(checkBoard().equals("X"))
+                {
+                   // System.out.println("ENTERED POSSIBLE WIN FOR COMPUTER");
+                    winPossibleComputer = true;
+                }
+                gameBoard[i].setState(' ');
 
             }
 
-            // check o's position diagonally, horizontally, and vertically
-            // diagonal - 4 , vertical - 3, horizontal - 1
-
-            // check if negative, then out of bounds
+            if(winPossibleComputer)
+            {
+                return i;
+            }
 
 
         }
 
 
 
+        boolean winPossibleHuman = false;
+
+        // changing player marker
+        playerTurn = -1;
+
+        // if no possible wins in all moves, just block player O if player O can win in the next move
+        for(int i = 0; i < gameBoard.length; i++)
+        {
+            if(gameBoard[i].getState() == ' ')
+            {
+
+                updateBoard(i);
+                if(checkBoard().equals("O"))
+                {
+                   // System.out.println("ENTERED POSSIBLE WIN FOR HUMAN");
+                    winPossibleHuman = true;
+                }
+                gameBoard[i].setState(' ');
+
+            }
+
+            if(winPossibleHuman)
+            {
+                playerTurn = 1;  // changing it back to computer's turn
+
+                return i;
+            }
+
+
+        }
+
+        // changing player marker back to computer
+        playerTurn = 1;
+
+
+        // if no possible wins for both parties, choose computer's next best move - which is the next empty spot
+
+        for(int i = 0; i < gameBoard.length; i++)
+        {
+            if(gameBoard[i].getState() == ' ')
+            {
+              return i;
+
+            }
+
+
+        }
+
+
+    return -1;
+
 
 
     }
 
 
-    */
 
     // computers turn AI
     public static int computerTurnMinimax()
     {
         // initial best score
-        int bestScore = Integer.MIN_VALUE;
+        int tempScore = Integer.MIN_VALUE; // temporary best score
         int move = -1;
 
         /*
@@ -229,20 +285,23 @@ public class TicTacToe {
 
         */
 
+        // performing minimax on all possible moves computer can make based on the current board configuration
         for(int i = 0; i < gameBoard.length; i++)
         {
-            // if tile is available
+            // if spot is available
             if(gameBoard[i].getState() == ' ')
             {
                 // depends on player move
-               // playerTurn = 1;
-                updateBoard(i);
-                int score = miniMax(0, false);
-                gameBoard[i].setState(' ');
+                playerTurn = 1;
+                updateBoard(i); // temporarily putting computer's marker to all available spots per iteration
+                int score = miniMax(0, false);   // performing minimax on the current board state
+                gameBoard[i].setState(' '); // removing computer's temporary marker
 
-                if(score > bestScore)
+
+                // essentially checking the score for every possible move computer can do and replacing it with the higher score
+                if(score > tempScore)
                 {
-                    bestScore = score;
+                    tempScore = score;
                     move = i;
 
                 }
@@ -255,19 +314,19 @@ public class TicTacToe {
         }
 
         playerTurn = 1;
-        return move;
+        return move;   // returns the best move for computer after considering all scenarios
 
     }
 
 
-    public static int miniMax(int depth, boolean isMaximizing)
+    public static int miniMax(int depth, boolean playerMaximizing)
     {
 
-        // check if theres winner
+        // check if theres winner already
         String verdict = checkBoard();
         int result = checkWinner(verdict);
 
-        // terminating statement
+        // terminating statement if game is over
         if(result != -1)
         {
             if(result == 2)
@@ -278,10 +337,12 @@ public class TicTacToe {
                 return scores.get("TIE");
         }
 
-        int bestScore;
-        if(isMaximizing)
+        int tempScore; // temporary best score
+
+        if(playerMaximizing)
         {
-            bestScore = Integer.MIN_VALUE;
+            tempScore = Integer.MIN_VALUE;
+
             for(int i = 0; i < gameBoard.length; i++)
             {
                 if(gameBoard[i].getState() == ' ')
@@ -290,15 +351,15 @@ public class TicTacToe {
                     updateBoard(i);
                     int score = miniMax(depth + 1, false);
                     gameBoard[i].setState(' ');
-                    bestScore = Math.max(score, bestScore);
+                    tempScore = Math.max(score, tempScore);
 
                 }
             }
 
         }
-        else
+        else // if player is minimizing , reverse the check process
         {
-            bestScore = Integer.MAX_VALUE;
+            tempScore = Integer.MAX_VALUE;
             for(int i = 0; i < gameBoard.length; i++)
             {
                 if(gameBoard[i].getState() == ' ')
@@ -309,90 +370,22 @@ public class TicTacToe {
                     int score = miniMax(depth + 1, true);
                     gameBoard[i].setState(' ');
 
-                    bestScore = Math.min(score, bestScore);
-
-
+                    tempScore = Math.min(score, tempScore);
 
                 }
             }
 
 
         }
-        return bestScore;
-
-
-
-/*
-        int bestScore;
-        boolean maximizing;
-
-
-        if(isMaximizing)
-        {
-            bestScore = Integer.MIN_VALUE;
-            maximizing = false;
-            playerTurn = 1;
-        }
-        else
-        {
-            bestScore = Integer.MAX_VALUE;
-            maximizing = true;
-            playerTurn = -1;
-        }
-
-        for(int i = 0; i < gameBoard.length; i++)
-        {
-            if(gameBoard[i].getState() == '-')
-            {
-                updateBoard(i);
-                int score = miniMax(depth + 1, maximizing);
-                gameBoard[i].setState('-');
-
-                if(isMaximizing)
-                    bestScore = Math.max(score, bestScore);
-                else
-                    bestScore = Math.min(score, bestScore);
-
-            }
-        }
-
-        return bestScore;
-
-
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return tempScore;
 
 
     }
 
 
-    // winner message
+    // winner check
     public static int checkWinner(String verdict)
     {
-
         switch (verdict) {
             case "X" -> {
                 //System.out.println("Computer Wins!");
@@ -413,10 +406,48 @@ public class TicTacToe {
 
 
 
-    // stupid computer
+
+    public static boolean isMoveValid(int move)
+    {
+
+        if(move < 0 || move > 8)
+        {
+            System.out.println("\n\t\t\t\t\t\t\tMove is out of bounds! Please try another move.");
+            return false;
+        }
+
+
+
+
+
+
+        if(gameBoard[move].getState() == ' ')
+        {
+            return true;
+        }
+        else
+        {
+            System.out.println("\n\t\t\t\t\t\t\tInvalid move! Please try another move.");
+            return false;
+        }
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+    // start tic tac toe
     public static void startGame(int level)
     {
-       // System.out.println("\t\t\t\t\t\t\tLevel Zero");
+
 
          // playerTurn  -1 for human, 1 for computer
 
@@ -430,13 +461,12 @@ public class TicTacToe {
             int move = -1;
          //   System.out.println("\n\t\t\t\t\t\t\tSTART GAME");
 
-
-
             if(firstPlayer.equals("COMPUTER"))
             {
                 playerTurn = 1;
             }
             else {
+                System.out.println("\n\t\t\t\t\t\t************************************");
                 displayBoard();
                 playerTurn = -1;
             }
@@ -446,38 +476,46 @@ public class TicTacToe {
 
                 if (playerTurn == 1) // computer's turn
                 {
+                    System.out.println("\n\t\t\t\t\t\t************************************");
                     System.out.println("\n\t\t\t\t\t\t\tCOMPUTER'S MOVE: \n");
 
-                    // stupid
+                    // random
                     if(level == 0)
                     {
+                        //System.out.println("LEVEL 0 MOVE");
                          move = computerTurnRandom();
 
                     }
                     // smart-ish
                     else if(level == 1)
                     {
-                        System.out.println("level 1");
-                        //move = computerTurnHuman();
+                        //System.out.println("LEVEL 1 MOVE");
+                        move = computerTurnHuman();
 
                     }
+
+
                     // smart
                     else if(level == 2)
                     {
+                       // System.out.println("LEVEL 2 MOVE");
                         move = computerTurnMinimax();
 
                     }
 
+
+
                 }
                 else // human's turn
                 {
+                    System.out.println("\n\t\t\t\t\t\t************************************");
                     System.out.println("\n\t\t\t\t\t\t\tYOUR TURN:");
-                    System.out.print("\n\t\t\t\t\t\t\tEnter move: ");
-                   // int temp = sc.nextInt();
 
-                   // move = temp - 1;
+                        do{
+                            System.out.print("\n\t\t\t\t\t\t\tEnter move: ");
+                            move = sc.nextInt() - 1;
 
-                    move = sc.nextInt() - 1;
+                        }while(!isMoveValid(move)); //check move validity
 
                 }
 
@@ -516,18 +554,16 @@ public class TicTacToe {
 
 
 
+            resetBoard();  // resetting the board for next round
 
-
-            resetBoard();
-
-            System.out.println("*************************************************************");
+            System.out.println("*****************************");
             System.out.println("\nPlay Again?");
             System.out.println("\n[1] Yes");
             System.out.println("[2] No");
             System.out.print("\nEnter Choice: ");
             choice = sc.nextInt();
 
-            System.out.println("*************************************************************");
+            System.out.println("*****************************");
 
             if(firstPlayer.equals("COMPUTER"))
             {
@@ -556,6 +592,7 @@ public class TicTacToe {
         boolean exit = false;
         initBoard();   // initializing the board
 
+        // for minimax algorithm
         scores.put("X", 1);
         scores.put("O", -1);
         scores.put("TIE", 0);
@@ -563,17 +600,20 @@ public class TicTacToe {
 
         while(!exit)
         {
-            System.out.println("*************************************************************");
-          //  System.out.println("Welcome to Tic-Tac-Toe!");
+
+
             System.out.println("\n" +
-                    "                                            ████████╗██╗ ██████╗    ████████╗ █████╗  ██████╗    ████████╗ ██████╗ ███████╗\n" +
-                    "                                            ╚══██╔══╝██║██╔════╝    ╚══██╔══╝██╔══██╗██╔════╝    ╚══██╔══╝██╔═══██╗██╔════╝\n" +
-                    "                                               ██║   ██║██║            ██║   ███████║██║            ██║   ██║   ██║█████╗  \n" +
-                    "                                               ██║   ██║██║            ██║   ██╔══██║██║            ██║   ██║   ██║██╔══╝  \n" +
-                    "                                               ██║   ██║╚██████╗       ██║   ██║  ██║╚██████╗       ██║   ╚██████╔╝███████╗\n" +
-                    "                                               ╚═╝   ╚═╝ ╚═════╝       ╚═╝   ╚═╝  ╚═╝ ╚═════╝       ╚═╝    ╚═════╝ ╚══════╝\n" +
-                    "                                                                                                                           \n");
-            System.out.println("____________________________");
+                    "██╗    ██╗███████╗██╗      ██████╗ ██████╗ ███╗   ███╗███████╗    ████████╗ ██████╗     ████████╗██╗ ██████╗    ████████╗ █████╗  ██████╗    ████████╗ ██████╗ ███████╗\n" +
+                    "██║    ██║██╔════╝██║     ██╔════╝██╔═══██╗████╗ ████║██╔════╝    ╚══██╔══╝██╔═══██╗    ╚══██╔══╝██║██╔════╝    ╚══██╔══╝██╔══██╗██╔════╝    ╚══██╔══╝██╔═══██╗██╔════╝\n" +
+                    "██║ █╗ ██║█████╗  ██║     ██║     ██║   ██║██╔████╔██║█████╗         ██║   ██║   ██║       ██║   ██║██║            ██║   ███████║██║            ██║   ██║   ██║█████╗  \n" +
+                    "██║███╗██║██╔══╝  ██║     ██║     ██║   ██║██║╚██╔╝██║██╔══╝         ██║   ██║   ██║       ██║   ██║██║            ██║   ██╔══██║██║            ██║   ██║   ██║██╔══╝  \n" +
+                    "╚███╔███╔╝███████╗███████╗╚██████╗╚██████╔╝██║ ╚═╝ ██║███████╗       ██║   ╚██████╔╝       ██║   ██║╚██████╗       ██║   ██║  ██║╚██████╗       ██║   ╚██████╔╝███████╗\n" +
+                    " ╚══╝╚══╝ ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝       ╚═╝    ╚═════╝        ╚═╝   ╚═╝ ╚═════╝       ╚═╝   ╚═╝  ╚═╝ ╚═════╝       ╚═╝    ╚═════╝ ╚══════╝\n" +
+                    "                                                                                                                                                                       \n");
+
+
+         //   System.out.println("____________________________");
+            System.out.println("*********TIC-TAC-TOE*********");
             System.out.println("\nChoose computer level: ");
             System.out.println("\n[1] Level 0 ");
             System.out.println("[2] Level 1 ");
@@ -583,9 +623,8 @@ public class TicTacToe {
             System.out.print("\nEnter choice: ");
             nChoice = sc.nextInt();
 
-          //  System.out.println("_____________________________________________________________");
+            System.out.println("*****************************");
 
-            // trap user's invalid move
 
             switch (nChoice) {
                 case 1 -> startGame(0);
