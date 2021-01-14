@@ -1,4 +1,6 @@
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
@@ -11,6 +13,53 @@ public class TicTacToe {
     private static Random random = new Random();
 
     static HashMap<String, Integer> scores = new HashMap<>();
+
+
+
+
+
+
+
+
+
+
+
+
+    // 1 - welcome, 2 - computer wins, 3 - human wins, 4 - draw
+    public static void displayAsciiText(int a) throws FileNotFoundException {
+
+        String txtName = "";
+
+        if(a == 1)
+        {
+            txtName = "welcome.txt";
+        }
+        else if( a == 2)
+        {
+            txtName = "computerWins.txt";
+        }
+        else if(a == 3)
+        {
+            txtName = "humanWins.txt";
+        }
+        else if (a == 4)
+        {
+            txtName = "draw.txt";
+        }
+
+
+        Scanner input = new Scanner(new File(txtName));
+
+        while (input.hasNextLine())
+        {
+            System.out.println(input.nextLine());
+        }
+
+    }
+
+
+
+
 
 
 
@@ -439,8 +488,7 @@ public class TicTacToe {
 
 
     // start tic tac toe
-    public static void startGame(int level)
-    {
+    public static void startGame(int level) throws FileNotFoundException {
 
 
          // playerTurn  -1 for human, 1 for computer
@@ -469,8 +517,25 @@ public class TicTacToe {
 
                 if (playerTurn == 1) // computer's turn
                 {
-                    System.out.println("\n\t\t\t\t\t\t************************************");
-                    System.out.println("\n\t\t\t\t\t\t\tCOMPUTER'S MOVE: \n");
+
+                    String lvl = " ";
+
+                    if(level == 0)
+                    {
+                        lvl = "LVL-0";
+                    }
+
+                    else if(level == 1)
+                    {
+                        lvl = "LVL-1";
+                    }
+
+                    else if(level == 2)
+                    {
+                        lvl = "LVL-2";
+                    }
+
+                    System.out.println("\n\t\t\t\t\t\t*********-COMPUTER'S MOVE-***" + lvl + "**\n");
 
                     // random
                     if(level == 0)
@@ -501,8 +566,9 @@ public class TicTacToe {
                 }
                 else // human's turn
                 {
-                    System.out.println("\n\t\t\t\t\t\t************************************");
-                    System.out.println("\n\t\t\t\t\t\t\tYOUR TURN:");
+
+                    System.out.println("\n\t\t\t\t\t\t************-YOUR TURN-*************");
+
 
                         do{
                             System.out.print("\n\t\t\t\t\t\t\tEnter move: ");
@@ -513,6 +579,7 @@ public class TicTacToe {
                 }
 
                 updateBoard(move);
+                System.out.println();
                 displayBoard();
 
                 if(playerTurn == 1)
@@ -531,11 +598,12 @@ public class TicTacToe {
                 if(checkWinner(verdict) == 2 || checkWinner(verdict) == 1 || checkWinner(verdict) == 0)
                 {
                     switch (verdict) {
-                        case "X" -> System.out.println("\nComputer Wins!");
+                        case "X" -> displayAsciiText(2);
+                        // System.out.println("\nComputer Wins!");
 
-                        case "O" -> System.out.println("\nYou Win!");
+                        case "O" -> displayAsciiText(3);
 
-                        case "TIE" -> System.out.println("\nIt's a tie!");
+                        case "TIE" -> displayAsciiText(4);
 
                     }
 
@@ -578,8 +646,7 @@ public class TicTacToe {
 
 
 
-    public static void main (String [] args)
-    {
+    public static void main (String [] args) throws FileNotFoundException {
 
         int nChoice;
         boolean exit = false;
@@ -591,18 +658,20 @@ public class TicTacToe {
         scores.put("TIE", 0);
 
 
+
+
+
+
+
+
+
+
+
         while(!exit)
         {
 
 
-            System.out.println("\n" +
-                    "██╗    ██╗███████╗██╗      ██████╗ ██████╗ ███╗   ███╗███████╗    ████████╗ ██████╗     ████████╗██╗ ██████╗    ████████╗ █████╗  ██████╗    ████████╗ ██████╗ ███████╗\n" +
-                    "██║    ██║██╔════╝██║     ██╔════╝██╔═══██╗████╗ ████║██╔════╝    ╚══██╔══╝██╔═══██╗    ╚══██╔══╝██║██╔════╝    ╚══██╔══╝██╔══██╗██╔════╝    ╚══██╔══╝██╔═══██╗██╔════╝\n" +
-                    "██║ █╗ ██║█████╗  ██║     ██║     ██║   ██║██╔████╔██║█████╗         ██║   ██║   ██║       ██║   ██║██║            ██║   ███████║██║            ██║   ██║   ██║█████╗  \n" +
-                    "██║███╗██║██╔══╝  ██║     ██║     ██║   ██║██║╚██╔╝██║██╔══╝         ██║   ██║   ██║       ██║   ██║██║            ██║   ██╔══██║██║            ██║   ██║   ██║██╔══╝  \n" +
-                    "╚███╔███╔╝███████╗███████╗╚██████╗╚██████╔╝██║ ╚═╝ ██║███████╗       ██║   ╚██████╔╝       ██║   ██║╚██████╗       ██║   ██║  ██║╚██████╗       ██║   ╚██████╔╝███████╗\n" +
-                    " ╚══╝╚══╝ ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝       ╚═╝    ╚═════╝        ╚═╝   ╚═╝ ╚═════╝       ╚═╝   ╚═╝  ╚═╝ ╚═════╝       ╚═╝    ╚═════╝ ╚══════╝\n" +
-                    "                                                                                                                                                                       \n");
+            displayAsciiText(1);
 
 
          //   System.out.println("____________________________");
